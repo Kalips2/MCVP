@@ -1,4 +1,4 @@
-package com.example.mcvp.lab1;
+package com.example.mcvp.lab2;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
@@ -28,20 +28,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.testng.annotations.BeforeGroups;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SongServiceTest {
+public class SongServiceTestNg {
   static SongRepositoryImpl songRepository;
   static AlbumRepositoryImpl albumRepository;
 
@@ -50,14 +46,14 @@ public class SongServiceTest {
 
   static SongServiceImpl songService;
 
-  @BeforeAll
+  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     albumRepository = new AlbumRepositoryImpl();
     songRepository = new SongRepositoryImpl();
     songService = new SongServiceImpl(songRepository, albumRepository);
   }
 
-  @BeforeEach
+  @BeforeGroups(groups = {"get", "delete", "count", "create-update"})
   public void setupTest() {
     resetElements();
 
@@ -88,8 +84,9 @@ public class SongServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetAll() {
+    System.out.println("Get group test");
     List<Song> result = songService.getAll();
 
     assumeTrue(!result.isEmpty());
@@ -110,8 +107,9 @@ public class SongServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetById() {
+    System.out.println("Get group test");
     Song song = songService.getById(testSongs.get(0).getId());
 
     assertAll(
@@ -121,15 +119,17 @@ public class SongServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetByIdThrowException() {
+    System.out.println("Get group test");
     Exception exception = assertThrows(InternalException.class, () -> songService.getById(-1L));
 
     assertThat(exception.getMessage(), is(Exceptions.SONG_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testCreate() {
+    System.out.println("Create-update group test");
     SongData newSongData = new SongData("New Song", 4.0, Genre.ROCK, testAlbums.get(0).getId());
     songService.create(newSongData);
 
@@ -147,8 +147,9 @@ public class SongServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdate() {
+    System.out.println("Create-update group test");
     Long songId = testSongs.get(0).getId();
     SongData updatedSongData = new SongData("Updated Song", 5.0, Genre.POP, testAlbums.get(1).getId());
 
@@ -165,24 +166,27 @@ public class SongServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowSongIsNotFoundException() {
+    System.out.println("Create-update group test");
     SongData songData = new SongData("Non-existent Song", 3.0, Genre.ROCK, 1L);
     Exception exception = assertThrows(InternalException.class, () -> songService.update(-1L, songData));
 
     assertThat(exception.getMessage(), is(Exceptions.SONG_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowAlbumIsNotFoundException() {
+    System.out.println("Create-update group test");
     SongData songData = new SongData("Non-existent Song", 3.0, Genre.ROCK, -1L);
     Exception exception = assertThrows(InternalException.class, () -> songService.update(testSongs.get(0).getId(), songData));
 
     assertThat(exception.getMessage(), is(Exceptions.ALBUM_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDelete() {
+    System.out.println("Delete test");
     Long songIdToDelete = testSongs.get(0).getId();
     songService.delete(songIdToDelete);
 
@@ -193,38 +197,28 @@ public class SongServiceTest {
     assertSame(deletedSong, Optional.empty());
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDeleteThrowSongIsNotFoundException() {
+    System.out.println("Delete test");
     Exception exception = assertThrows(InternalException.class, () -> songService.delete(-1L));
 
     assertThat(exception.getMessage(), is(Exceptions.SONG_IS_NOT_FOUND.getMessage()));
   }
 
-  @ParameterizedTest
-  @MethodSource("provideGenresToCounts")
-  public void testCountSongsByGenre(Genre genre, Long expectedCount) {
-    long count = songService.countSongsByGenre(genre);
-    assertEquals(expectedCount, count);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-      "ROCK, 2",
-      "POP, 1",
-      "JAZZ, 1",
-      "CLASSICAL, 1"
-  })
+  @Test(groups = "count", dataProvider = "provideGenresToCounts")
   public void testCsvCountSongsByGenre(Genre genre, Long expectedCount) {
+    System.out.println("Count test");
     long count = songService.countSongsByGenre(genre);
     assertEquals(expectedCount, count);
   }
 
-  public static Stream<Arguments> provideGenresToCounts() {
-    return Stream.of(
-        Arguments.of(Genre.ROCK, 2L),
-        Arguments.of(Genre.POP, 1L),
-        Arguments.of(Genre.JAZZ, 1L),
-        Arguments.of(Genre.CLASSICAL, 1L)
-    );
+  @DataProvider(name = "provideGenresToCounts")
+  public static Object[][] provideGenresToCounts() {
+    return new Object[][] {
+        {Genre.ROCK, 2L},
+        {Genre.POP, 1L},
+        {Genre.JAZZ, 1L},
+        {Genre.CLASSICAL, 1L},
+    };
   }
 }

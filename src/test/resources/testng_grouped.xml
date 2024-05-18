@@ -1,0 +1,31 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="GroupedTestSuite">
+	<test name="Get, Create-Update tests">
+		<groups>
+			<run>
+				<include name="get"/>
+				<include name="create-update"/>
+			</run>
+		</groups>
+		<classes>
+			<class name="com.example.mcvp.lab2.SongServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.LabelServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.ArtistServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.AlbumServiceTestNg"/>
+		</classes>
+	</test>
+	<test name="Delete, Count tests">
+		<groups>
+			<run>
+				<include name="delete"/>
+				<include name="count"/>
+			</run>
+		</groups>
+		<classes>
+			<class name="com.example.mcvp.lab2.SongServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.LabelServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.ArtistServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.AlbumServiceTestNg"/>
+		</classes>
+	</test>
+</suite>

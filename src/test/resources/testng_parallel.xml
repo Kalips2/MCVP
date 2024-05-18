@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="ParallelTestSuite" parallel="methods" thread-count="2">
+	<test name="SongServiceTests">
+		<classes>
+			<class name="com.example.mcvp.lab2.SongServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.LabelServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.ArtistServiceTestNg"/>
+			<class name="com.example.mcvp.lab2.AlbumServiceTestNg"/>
+		</classes>
+	</test>
+</suite>
+

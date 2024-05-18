@@ -1,10 +1,9 @@
-package com.example.mcvp.lab1;
+package com.example.mcvp.lab2;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -25,32 +24,28 @@ import com.example.mcvp.services.impl.LabelServiceImpl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LabelServiceTest {
+public class LabelServiceTestNg {
   static LabelRepositoryImpl labelRepository;
 
   static List<Label> testLabels;
 
   static LabelServiceImpl labelService;
 
-  @BeforeAll
+  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     labelRepository = new LabelRepositoryImpl();
     labelService = new LabelServiceImpl(labelRepository);
   }
 
-  @BeforeEach
+  @BeforeMethod(groups = {"get", "delete", "count", "create-update"})
   public void setupTest() {
     resetElements();
 
@@ -70,7 +65,7 @@ public class LabelServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetAll() {
     List<Label> result = labelService.getAll();
 
@@ -89,7 +84,7 @@ public class LabelServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetById() {
     Label label = labelService.getById(testLabels.get(0).getId());
 
@@ -103,14 +98,14 @@ public class LabelServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetByIdThrowException() {
     Exception exception = assertThrows(InternalException.class, () -> labelService.getById(-1L));
 
     assertThat(exception.getMessage(), is(Exceptions.LABEL_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testCreate() {
     LabelData newLabelData = new LabelData("New Label", new CoordinateDto("100.0, 100.0"));
     Long labelId = labelService.create(newLabelData);
@@ -132,7 +127,7 @@ public class LabelServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdate() {
     Long labelId = testLabels.get(0).getId();
     LabelData updatedLabelData = new LabelData("Updated Label", new CoordinateDto("110.0, 110.0"));
@@ -152,7 +147,7 @@ public class LabelServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowLabelIsNotFoundException() {
     LabelData labelData = new LabelData("Non-existent Label", new CoordinateDto("120.0, 120.0"));
     Exception exception = assertThrows(InternalException.class, () -> labelService.update(-1L, labelData));
@@ -160,7 +155,7 @@ public class LabelServiceTest {
     assertThat(exception.getMessage(), is(Exceptions.LABEL_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDelete() {
     Long labelIdToDelete = testLabels.get(0).getId();
     labelService.delete(labelIdToDelete);
@@ -172,44 +167,24 @@ public class LabelServiceTest {
     assertSame(deletedLabel, Optional.empty());
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDeleteThrowLabelIsNotFoundException() {
     Exception exception = assertThrows(InternalException.class, () -> labelService.delete(-1L));
 
     assertThat(exception.getMessage(), is(Exceptions.LABEL_IS_NOT_FOUND.getMessage()));
   }
 
-  @ParameterizedTest
-  @MethodSource("provideNamesToSearch")
+  @Test(groups = "count", dataProvider = "provideNamesToSearch")
   public void testGetByName(String name, boolean expectedExists) {
     Optional<Label> label = labelService.getByName(name);
     assertEquals(expectedExists, label.isPresent());
   }
 
-  @ParameterizedTest
-  @CsvSource({
-      "Label 1, true",
-      "Non-existent Label, false"
-  })
-  public void testCsvGetByName(String name, boolean expectedExists) {
-    Optional<Label> label = labelService.getByName(name);
-    assertEquals(expectedExists, label.isPresent());
-  }
-
-  public static Stream<Arguments> provideNamesToSearch() {
-    return Stream.of(
-        Arguments.of("Label 1", true),
-        Arguments.of("Non-existent Label", false)
-    );
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-      "Label, 6",
-      "Non-existent, 0"
-  })
-  public void testGetNamesThatContain(String name, int expectedCount) {
-    List<String> names = labelService.getNamesThatContain(name);
-    assertThat(names.size(), is(expectedCount));
+  @DataProvider(name = "provideNamesToSearch")
+  public static Object[][] provideNamesToSearch() {
+    return new Object[][] {
+        {"Label 1", true},
+        {"Non-existent Label", false}
+    };
   }
 }

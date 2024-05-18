@@ -1,4 +1,4 @@
-package com.example.mcvp.lab1;
+package com.example.mcvp.lab2;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
@@ -26,25 +26,25 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Test;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ArtistServiceTest {
+public class ArtistServiceTestNg {
   static ArtistRepositoryImpl artistRepository;
 
   static List<Artist> testArtists;
 
   static ArtistServiceImpl artistService;
 
-  @BeforeAll
+  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     artistRepository = new ArtistRepositoryImpl();
     artistService = new ArtistServiceImpl(artistRepository);
   }
 
-  @BeforeEach
+  @BeforeMethod(groups = {"get", "delete", "count", "create-update"})
   public void setupTest() {
     resetElements();
 
@@ -64,7 +64,7 @@ public class ArtistServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetAll() {
     List<Artist> result = artistService.getAll();
 
@@ -87,7 +87,7 @@ public class ArtistServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetById() {
     Artist artist = artistService.getById(testArtists.get(0).getId());
 
@@ -99,14 +99,14 @@ public class ArtistServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetByIdThrowException() {
     Exception exception = assertThrows(InternalException.class, () -> artistService.getById(-1L));
 
     assertThat(exception.getMessage(), is(Exceptions.ARTIST_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testCreate() {
     ArtistData newArtistData = new ArtistData("New", "Artist", "2000-01-01");
     artistService.create(newArtistData);
@@ -126,7 +126,7 @@ public class ArtistServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdate() {
     Long artistId = testArtists.get(0).getId();
     ArtistData updatedArtistData = new ArtistData("Updated", "Artist", "2001-01-01");
@@ -144,7 +144,7 @@ public class ArtistServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowArtistIsNotFoundException() {
     ArtistData artistData = new ArtistData("Non-existent", "Artist", "2002-01-01");
     Exception exception = assertThrows(InternalException.class, () -> artistService.update(-1L, artistData));
@@ -152,7 +152,7 @@ public class ArtistServiceTest {
     assertThat(exception.getMessage(), is(Exceptions.ARTIST_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDelete() {
     Long artistIdToDelete = testArtists.get(0).getId();
     artistService.delete(artistIdToDelete);
@@ -164,7 +164,7 @@ public class ArtistServiceTest {
     assertSame(deletedArtist, Optional.empty());
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDeleteThrowArtistIsNotFoundException() {
     Exception exception = assertThrows(InternalException.class, () -> artistService.delete(-1L));
 

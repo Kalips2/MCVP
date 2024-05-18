@@ -1,4 +1,4 @@
-package com.example.mcvp.lab1;
+package com.example.mcvp.lab2;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
@@ -35,21 +35,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AlbumServiceTest {
+public class AlbumServiceTestNg {
   static AlbumRepositoryImpl albumRepository;
   static LabelRepositoryImpl labelRepository;
   static ArtistRepositoryImpl artistRepository;
@@ -61,7 +59,7 @@ public class AlbumServiceTest {
 
   private static AlbumServiceImpl albumService;
 
-  @BeforeAll
+  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     file = new MockMultipartFile("file", "filename.txt", "text/plain", "some content".getBytes());
 
@@ -72,7 +70,7 @@ public class AlbumServiceTest {
     albumService = new AlbumServiceImpl(albumRepository, artistRepository, labelRepository);
   }
 
-  @BeforeEach
+  @BeforeMethod(groups = {"get", "delete", "count", "create-update"})
   public void setupTest() {
     resetElements();
 
@@ -114,7 +112,7 @@ public class AlbumServiceTest {
 
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetAll() {
     List<Album> result = albumService.getAll();
 
@@ -140,7 +138,7 @@ public class AlbumServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetById() {
     Album album = albumService.getById(testAlbums.get(0).getId());
 
@@ -152,14 +150,14 @@ public class AlbumServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "get")
   public void testGetByIdThrowException() {
     Exception exception = assertThrows(InternalException.class, () -> albumService.getById(-1L));
 
     assertThat(exception.getMessage(), is(Exceptions.ALBUM_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testCreate() {
     AlbumData newAlbumData = new AlbumData("New Album", "1900-01-01", testArtists.get(0).getId(), testLabels.get(0).getId());
     albumService.create(newAlbumData, file);
@@ -179,7 +177,7 @@ public class AlbumServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdate() {
     Long albumId = testAlbums.get(0).getId();
     AlbumData updatedAlbumData = new AlbumData("New Title", "2022-01-01", testArtists.get(1).getId(), testLabels.get(1).getId());
@@ -199,31 +197,31 @@ public class AlbumServiceTest {
     );
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowAlbumIsNotFoundException() {
-    AlbumData albumData = new AlbumData("Non-existent Album", "2022-01-01", 1L, 1L);
+    AlbumData albumData = new AlbumData("Non-existent Album", "2022-01-01", testArtists.get(0).getId(), testLabels.get(0).getId());
     Exception exception = assertThrows(InternalException.class, () -> albumService.update(-1L, albumData, file));
 
     assertThat(exception.getMessage(), is(Exceptions.ALBUM_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowLabelIsNotFoundException() {
-    AlbumData albumData = new AlbumData("Non-existent Album", "2022-01-01", 1L, -1L);
+    AlbumData albumData = new AlbumData("Non-existent Album", "2022-01-01", testArtists.get(0).getId(), -1L);
     Exception exception = assertThrows(InternalException.class, () -> albumService.update(testAlbums.get(0).getId(), albumData, file));
 
     assertThat(exception.getMessage(), is(Exceptions.LABEL_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "create-update")
   public void testUpdateThrowArtistIsNotFoundException() {
-    AlbumData albumData = new AlbumData("Non-existent Album", "2022-01-01", -1L, 1L);
+    AlbumData albumData = new AlbumData("Non-existent Album", "2022-01-01", -1L, testLabels.get(0).getId());
     Exception exception = assertThrows(InternalException.class, () -> albumService.update(testAlbums.get(0).getId(), albumData, file));
 
     assertThat(exception.getMessage(), is(Exceptions.ARTIST_IS_NOT_FOUND.getMessage()));
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDelete() {
     Long albumIdToDelete = testAlbums.get(0).getId();
     albumService.delete(albumIdToDelete);
@@ -235,7 +233,7 @@ public class AlbumServiceTest {
     assertSame(deletedAlbum, Optional.empty());
   }
 
-  @Test
+  @Test(groups = "delete")
   public void testDeleteThrowAlbumsIsNotFoundException() {
     Exception exception = assertThrows(InternalException.class, () -> albumService.delete(-1L));
 
@@ -248,19 +246,16 @@ public class AlbumServiceTest {
     assertEquals(expectedCountOfLabels, albumService.countAlbumsByLabelName(labelName));
   }
 
-  @ParameterizedTest
-  @CsvSource({
-      "Label 1, 3",
-      "Label 2, 3"
-  })
+  @Test(groups = "count", dataProvider = "provideLabelNameToItsCount")
   public void testCsvCountAlbumsByLabelId(String labelName, Long expectedCountOfLabels) {
     assertEquals(expectedCountOfLabels, albumService.countAlbumsByLabelName(labelName));
   }
 
-  public static Stream<Arguments> provideLabelNameToItsCount() {
-    return Stream.of(
-        Arguments.of("Label 1", 3L),
-        Arguments.of("Label 2", 3L)
-    );
+  @DataProvider(name = "provideLabelNameToItsCount")
+  public static Object[][] provideLabelNameToItsCount() {
+    return new Object[][]{
+      {"Label 1", 3L},
+      {"Label 2", 3L}
+    };
   }
 }
