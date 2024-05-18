@@ -9,6 +9,8 @@ import com.example.mcvp.models.Genre;
 import com.example.mcvp.models.Song;
 import com.example.mcvp.repositories.AlbumRepository;
 import com.example.mcvp.repositories.SongRepository;
+import com.example.mcvp.repositories.impl.AlbumRepositoryImpl;
+import com.example.mcvp.repositories.impl.SongRepositoryImpl;
 import com.example.mcvp.services.SongService;
 import java.util.List;
 import java.util.stream.StreamSupport;

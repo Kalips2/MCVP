@@ -27,9 +27,9 @@ import com.example.mcvp.models.Album;
 import com.example.mcvp.models.Artist;
 import com.example.mcvp.models.CoordinateDto;
 import com.example.mcvp.models.Label;
-import com.example.mcvp.repositories.AlbumRepository;
-import com.example.mcvp.repositories.ArtistRepository;
-import com.example.mcvp.repositories.LabelRepository;
+import com.example.mcvp.repositories.impl.AlbumRepositoryImpl;
+import com.example.mcvp.repositories.impl.ArtistRepositoryImpl;
+import com.example.mcvp.repositories.impl.LabelRepositoryImpl;
 import com.example.mcvp.services.impl.AlbumServiceImpl;
 import java.util.Arrays;
 import java.util.List;
@@ -50,9 +50,9 @@ import org.springframework.mock.web.MockMultipartFile;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AlbumServiceTest {
-  static AlbumRepository albumRepository;
-  static LabelRepository labelRepository;
-  static ArtistRepository artistRepository;
+  static AlbumRepositoryImpl albumRepository;
+  static LabelRepositoryImpl labelRepository;
+  static ArtistRepositoryImpl artistRepository;
 
   static List<Album> testAlbums;
   static List<Artist> testArtists;
@@ -65,9 +65,9 @@ public class AlbumServiceTest {
   public static void setupAll() {
     file = new MockMultipartFile("file", "filename.txt", "text/plain", "some content".getBytes());
 
-    albumRepository = new AlbumRepository();
-    labelRepository = new LabelRepository();
-    artistRepository = new ArtistRepository();
+    albumRepository = new AlbumRepositoryImpl();
+    labelRepository = new LabelRepositoryImpl();
+    artistRepository = new ArtistRepositoryImpl();
 
     albumService = new AlbumServiceImpl(albumRepository, artistRepository, labelRepository);
   }

@@ -5,7 +5,6 @@ import com.example.mcvp.exceptions.Exceptions;
 import com.example.mcvp.exceptions.InternalException;
 import com.example.mcvp.mappers.LabelMapper;
 import com.example.mcvp.models.Label;
-import com.example.mcvp.repositories.AlbumRepository;
 import com.example.mcvp.repositories.LabelRepository;
 import com.example.mcvp.services.LabelService;
 import java.util.Arrays;

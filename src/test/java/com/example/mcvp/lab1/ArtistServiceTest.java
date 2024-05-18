@@ -18,7 +18,7 @@ import com.example.mcvp.exceptions.Exceptions;
 import com.example.mcvp.exceptions.InternalException;
 import com.example.mcvp.mappers.DataMapper;
 import com.example.mcvp.models.Artist;
-import com.example.mcvp.repositories.ArtistRepository;
+import com.example.mcvp.repositories.impl.ArtistRepositoryImpl;
 import com.example.mcvp.services.impl.ArtistServiceImpl;
 import java.util.Arrays;
 import java.util.List;
@@ -32,13 +32,15 @@ import org.junit.jupiter.api.Test;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ArtistServiceTest {
-  static ArtistRepository artistRepository;
+  static ArtistRepositoryImpl artistRepository;
+
   static List<Artist> testArtists;
-  private static ArtistServiceImpl artistService;
+
+  static ArtistServiceImpl artistService;
 
   @BeforeAll
   public static void setupAll() {
-    artistRepository = new ArtistRepository();
+    artistRepository = new ArtistRepositoryImpl();
     artistService = new ArtistServiceImpl(artistRepository);
   }
 

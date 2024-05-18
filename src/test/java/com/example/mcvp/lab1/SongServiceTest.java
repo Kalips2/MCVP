@@ -21,8 +21,8 @@ import com.example.mcvp.mappers.DataMapper;
 import com.example.mcvp.models.Album;
 import com.example.mcvp.models.Genre;
 import com.example.mcvp.models.Song;
-import com.example.mcvp.repositories.AlbumRepository;
-import com.example.mcvp.repositories.SongRepository;
+import com.example.mcvp.repositories.impl.AlbumRepositoryImpl;
+import com.example.mcvp.repositories.impl.SongRepositoryImpl;
 import com.example.mcvp.services.impl.SongServiceImpl;
 import java.util.Arrays;
 import java.util.List;
@@ -42,18 +42,18 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SongServiceTest {
-  static SongRepository songRepository;
-  static AlbumRepository albumRepository;
+  static SongRepositoryImpl songRepository;
+  static AlbumRepositoryImpl albumRepository;
 
   static List<Song> testSongs;
   static List<Album> testAlbums;
 
-  private static SongServiceImpl songService;
+  static SongServiceImpl songService;
 
   @BeforeAll
   public static void setupAll() {
-    albumRepository = new AlbumRepository();
-    songRepository = new SongRepository();
+    albumRepository = new AlbumRepositoryImpl();
+    songRepository = new SongRepositoryImpl();
     songService = new SongServiceImpl(songRepository, albumRepository);
   }
 

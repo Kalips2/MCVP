@@ -20,12 +20,11 @@ import com.example.mcvp.exceptions.Exceptions;
 import com.example.mcvp.exceptions.InternalException;
 import com.example.mcvp.models.CoordinateDto;
 import com.example.mcvp.models.Label;
-import com.example.mcvp.repositories.LabelRepository;
+import com.example.mcvp.repositories.impl.LabelRepositoryImpl;
 import com.example.mcvp.services.impl.LabelServiceImpl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -39,15 +38,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LabelServiceTest {
-  static LabelRepository labelRepository;
+  static LabelRepositoryImpl labelRepository;
 
   static List<Label> testLabels;
 
-  private static LabelServiceImpl labelService;
+  static LabelServiceImpl labelService;
 
   @BeforeAll
   public static void setupAll() {
-    labelRepository = new LabelRepository();
+    labelRepository = new LabelRepositoryImpl();
     labelService = new LabelServiceImpl(labelRepository);
   }
 
