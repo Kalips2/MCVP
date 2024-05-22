@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
@@ -39,7 +40,7 @@ public class LabelServiceTestNg {
 
   static LabelServiceImpl labelService;
 
-  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
+  @BeforeClass(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     labelRepository = new LabelRepositoryImpl();
     labelService = new LabelServiceImpl(labelRepository);

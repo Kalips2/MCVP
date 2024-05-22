@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
@@ -38,7 +39,7 @@ public class ArtistServiceTestNg {
 
   static ArtistServiceImpl artistService;
 
-  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
+  @BeforeClass(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     artistRepository = new ArtistRepositoryImpl();
     artistService = new ArtistServiceImpl(artistRepository);

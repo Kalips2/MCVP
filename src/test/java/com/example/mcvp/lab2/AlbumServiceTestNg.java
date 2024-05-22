@@ -41,6 +41,7 @@ import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.mock.web.MockMultipartFile;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
@@ -59,7 +60,7 @@ public class AlbumServiceTestNg {
 
   private static AlbumServiceImpl albumService;
 
-  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
+  @BeforeClass(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     file = new MockMultipartFile("file", "filename.txt", "text/plain", "some content".getBytes());
 

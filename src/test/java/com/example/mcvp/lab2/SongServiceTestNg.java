@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
@@ -46,7 +47,7 @@ public class SongServiceTestNg {
 
   static SongServiceImpl songService;
 
-  @BeforeSuite(groups = {"get", "delete", "count", "create-update"})
+  @BeforeClass(groups = {"get", "delete", "count", "create-update"})
   public static void setupAll() {
     albumRepository = new AlbumRepositoryImpl();
     songRepository = new SongRepositoryImpl();
